@@ -1,21 +1,23 @@
-import mysql.connector
+from dotenv import load_dotenv
 from datetime import datetime
+import mysql.connector
+import os
 
 
 conn_relacional = mysql.connector.connect(
-    host='trabalho-kelly-banco-de-dados-2024-1.l.aivencloud.com',
-    port=25694,
-    user='avnadmin',
-    password='AVNS_qxYqWSPuEOEooRWhlXK',
-    database='dbnetf',
+    host = os.getenv('HOST_RELACIONAL'),
+    port = os.getenv('PORT_RELACIONAL'),
+    user = os.getenv('USER_RELACIONAL'),
+    password = os.getenv('PASSWORD_RELACIONAL'),
+    database = os.getenv('DATABASE_RELACIONAL'),
 )
 
 conn_dimensional = mysql.connector.connect(
-    host='modelo-dimensional-in-davidsonifes.d.aivencloud.com',
-    port=13844,
-    user='avnadmin',
-    password='AVNS_bDOXo9cSeE-GQIBLhRB',
-    database='dbnetf',
+    host = os.getenv('HOST_DIMENSIONAL'),
+    port = os.getenv('PORT_DIMENSIONAL'),
+    user = os.getenv('USER_DIMENSIONAL'),
+    password = os.getenv('PASSWORD_DIMENSIONAL'),
+    database = os.getenv('DATABASE_DIMENSIONAL'),
 )
 
 cursor_relacional = conn_relacional.cursor()

@@ -82,7 +82,6 @@ CREATE TABLE IF NOT EXISTS `Fato_Assinatura` (
 -- ----------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `Fato_Receita` (
   `idFato_Receita` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
-  `qtd_assinaturas` INT DEFAULT NULL,
   `fk_receita_plano` INT NOT NULL,
   `fk_receita_pagamento` INT NOT NULL,
   `fk_receita_data` INT NOT NULL,

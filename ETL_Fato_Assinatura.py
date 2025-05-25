@@ -60,15 +60,16 @@ for (idAssinatura, dtnascimento, nmPais, dtInicio, email) in resultados:
         idUsuario = cursor_dimensional.lastrowid
 
     # --- Dim_Data (Data de Assinatura) ---
+    dia = dtInicio.day
     mes = dtInicio.month
     ano = dtInicio.year
 
-    cursor_dimensional.execute("SELECT idDim_Data FROM Dim_Data WHERE mes = %s AND ano = %s", (mes, ano))
+    cursor_dimensional.execute("SELECT idDim_Data FROM Dim_Data WHERE mes = %s AND ano = %s AND dia = %s", (mes, ano, dia))
     row = cursor_dimensional.fetchone()
     if row:
         idData = row[0]
     else:
-        cursor_dimensional.execute("INSERT INTO Dim_Data (mes, ano) VALUES (%s, %s)", (mes, ano))
+        cursor_dimensional.execute("INSERT INTO Dim_Data (mes, ano, dia) VALUES (%s, %s, %s)", (mes, ano, dia))
         conn_dimensional.commit()
         idData = cursor_dimensional.lastrowid
 
@@ -76,29 +77,31 @@ for (idAssinatura, dtnascimento, nmPais, dtInicio, email) in resultados:
     # --- Fato_Assinatura (verifica se já existe antes de inserir) ---
     cursor_dimensional.execute("""
         SELECT qtd_novos_assinantes FROM Fato_Assinatura
-        WHERE Dim_Localizacao_idLocalizacao = %s
-          AND Dim_DataAssinatura_idDim_Data = %s
-          AND Dim_Usuario_idUsuario = %s
+        WHERE fk_assinatura_localizacao = %s
+          AND fk_assinatura_data = %s
+          AND fk_assinatura_usuario = %s
     """, (idLocalizacao, idData, idUsuario))
     row = cursor_dimensional.fetchone()
 
     if row:
-        # Ja existe um fato com esses dados
+        # Ja existe um fato com esses dados, atualiza ele...
         cursor_dimensional.execute("""
             UPDATE Fato_Assinatura
             SET qtd_novos_assinantes = %s
-            WHERE Dim_Localizacao_idLocalizacao = %s
-              AND Dim_DataAssinatura_idDim_Data = %s
-              AND Dim_Usuario_idUsuario = %s
+            WHERE fk_assinatura_localizacao = %s
+                AND fk_assinatura_data = %s
+                AND fk_assinatura_usuario = %s
         """, (1, idLocalizacao, idData, idUsuario))
+        print("Ja existe um fato para esse usuario, atualizando os dados...")
     else:
         # Registro não existe, insere novo
         cursor_dimensional.execute("""
             INSERT INTO Fato_Assinatura (
-                Dim_Localizacao_idLocalizacao,
-                Dim_DataAssinatura_idDim_Data,
-                Dim_Usuario_idUsuario,
+                fk_assinatura_localizacao,
+                fk_assinatura_data,
+                fk_assinatura_usuario,
                 qtd_novos_assinantes    
             ) VALUES (%s, %s, %s, %s)
         """, (idLocalizacao, idData, idUsuario, 1))
     conn_dimensional.commit()
+print ("ETL do fato assinatura feito com sucesso :)")

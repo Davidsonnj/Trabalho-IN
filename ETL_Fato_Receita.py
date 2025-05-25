@@ -67,15 +67,16 @@ for (vlRecebido, nmPlano, precoMensal, dtPagamento, qtd_assinatura) in resultado
     
      # --- Dim_Data (Data de Pagamento) ---
     data_pagamento = datetime.strptime(dtPagamento, '%Y-%m-%d')
+    dia = data_pagamento.day
     mes = data_pagamento.month
     ano = data_pagamento.year
 
-    cursor_dimensional.execute("SELECT idDim_Data FROM Dim_Data WHERE mes = %s AND ano = %s", (mes, ano))
+    cursor_dimensional.execute("SELECT idDim_Data FROM Dim_Data WHERE mes = %s AND ano = %s AND dia = %s", (mes, ano, dia))
     row = cursor_dimensional.fetchone()
     if row:
         idData = row[0]
     else:
-        cursor_dimensional.execute("INSERT INTO Dim_Data (mes, ano) VALUES (%s, %s)", (mes, ano))
+        cursor_dimensional.execute("INSERT INTO Dim_Data (mes, ano, dia) VALUES (%s, %s, %s)", (mes, ano, dia))
         conn_dimensional.commit()
         idData = cursor_dimensional.lastrowid
 
@@ -83,12 +84,13 @@ for (vlRecebido, nmPlano, precoMensal, dtPagamento, qtd_assinatura) in resultado
     cursor_dimensional.execute("""
         INSERT INTO Fato_Receita (
             qtd_assinaturas,
-            fk_fato_receita_dim_plano,
-            fk_fato_receita_dim_pagamento,
-            fk_fato_receita_dim_data
+            fk_receita_plano,
+            fk_receita_pagamento,
+            fk_receita_data
         ) VALUES (%s, %s, %s, %s)
         ON DUPLICATE KEY UPDATE
             qtd_assinaturas = qtd_assinaturas + VALUES(qtd_assinaturas)
     """, (qtd_assinatura, idPlano, idPagamento, idData))
 
     conn_dimensional.commit()
+print("ETL do fato assinatura feito com sucesso :)")

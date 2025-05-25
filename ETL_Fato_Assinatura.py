@@ -68,6 +68,7 @@ for (idAssinatura, dtnascimento, nmPais, dtInicio, email) in resultados:
     row = cursor_dimensional.fetchone()
     if row:
         idData = row[0]
+        print(f"Data já existe: idDim_Data = {idData} para {dia}/{mes}/{ano}")
     else:
         cursor_dimensional.execute("INSERT INTO Dim_Data (mes, ano, dia) VALUES (%s, %s, %s)", (mes, ano, dia))
         conn_dimensional.commit()

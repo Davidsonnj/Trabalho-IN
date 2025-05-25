@@ -75,6 +75,7 @@ for (vlRecebido, nmPlano, precoMensal, dtPagamento, qtd_assinatura) in resultado
     row = cursor_dimensional.fetchone()
     if row:
         idData = row[0]
+        print(f"Data já existe: idDim_Data = {idData} para {dia}/{mes}/{ano}")
     else:
         cursor_dimensional.execute("INSERT INTO Dim_Data (mes, ano, dia) VALUES (%s, %s, %s)", (mes, ano, dia))
         conn_dimensional.commit()
@@ -82,15 +83,12 @@ for (vlRecebido, nmPlano, precoMensal, dtPagamento, qtd_assinatura) in resultado
 
     # --- UPSERT na Fato_Receita ---
     cursor_dimensional.execute("""
-        INSERT INTO Fato_Receita (
-            qtd_assinaturas,
-            fk_receita_plano,
-            fk_receita_pagamento,
-            fk_receita_data
-        ) VALUES (%s, %s, %s, %s)
-        ON DUPLICATE KEY UPDATE
-            qtd_assinaturas = qtd_assinaturas + VALUES(qtd_assinaturas)
-    """, (qtd_assinatura, idPlano, idPagamento, idData))
+    INSERT IGNORE INTO Fato_Receita (
+        fk_receita_plano,
+        fk_receita_pagamento,
+        fk_receita_data
+    ) VALUES (%s, %s, %s)
+    """, (idPlano, idPagamento, idData))
 
     conn_dimensional.commit()
 print("ETL do fato assinatura feito com sucesso :)")

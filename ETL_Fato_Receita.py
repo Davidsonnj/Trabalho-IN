@@ -1,20 +1,23 @@
 from dotenv import load_dotenv
 from datetime import datetime
-import mysql.connector
+import pymysql
 import os
 
+load_dotenv()
 
-conn_relacional = mysql.connector.connect(
+# Conexão com o banco relacional
+conn_relacional = pymysql.connect(
     host = os.getenv('HOST_RELACIONAL'),
-    port = os.getenv('PORT_RELACIONAL'),
+    port = int(os.getenv('PORT_RELACIONAL')),
     user = os.getenv('USER_RELACIONAL'),
     password = os.getenv('PASSWORD_RELACIONAL'),
     database = os.getenv('DATABASE_RELACIONAL'),
 )
 
-conn_dimensional = mysql.connector.connect(
+# Conexão com o banco dimensional
+conn_dimensional = pymysql.connect(
     host = os.getenv('HOST_DIMENSIONAL'),
-    port = os.getenv('PORT_DIMENSIONAL'),
+    port = int(os.getenv('PORT_DIMENSIONAL')),
     user = os.getenv('USER_DIMENSIONAL'),
     password = os.getenv('PASSWORD_DIMENSIONAL'),
     database = os.getenv('DATABASE_DIMENSIONAL'),

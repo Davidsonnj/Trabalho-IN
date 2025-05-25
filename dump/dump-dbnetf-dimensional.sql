@@ -21,7 +21,7 @@ SET @@SESSION.SQL_LOG_BIN= 0;
 -- GTID state at the beginning of the backup 
 --
 
-SET @@GLOBAL.GTID_PURGED=/*!80000 '+'*/ '149f82a0-376e-11f0-8815-862ccfb02096:1-751';
+SET @@GLOBAL.GTID_PURGED=/*!80000 '+'*/ '149f82a0-376e-11f0-8815-862ccfb02096:1-861';
 
 --
 -- Table structure for table `Dim_Data`
@@ -75,30 +75,6 @@ INSERT INTO `Dim_Localizacao` VALUES (36,'Brasil','América do Sul'),(37,'Estado
 UNLOCK TABLES;
 
 --
--- Table structure for table `Dim_Pagamento`
---
-
-DROP TABLE IF EXISTS `Dim_Pagamento`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `Dim_Pagamento` (
-  `idPagamento` int NOT NULL AUTO_INCREMENT,
-  `vlrRecebido` varchar(45) DEFAULT NULL,
-  PRIMARY KEY (`idPagamento`)
-) ENGINE=InnoDB AUTO_INCREMENT=26 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `Dim_Pagamento`
---
-
-LOCK TABLES `Dim_Pagamento` WRITE;
-/*!40000 ALTER TABLE `Dim_Pagamento` DISABLE KEYS */;
-INSERT INTO `Dim_Pagamento` VALUES (21,'19.90'),(22,'29.90'),(23,'39.90'),(24,'49.90'),(25,'14.90');
-/*!40000 ALTER TABLE `Dim_Pagamento` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `Dim_Plano`
 --
 
@@ -110,7 +86,7 @@ CREATE TABLE `Dim_Plano` (
   `nmPlano` varchar(50) DEFAULT NULL,
   `precoMensal` decimal(10,2) DEFAULT NULL,
   PRIMARY KEY (`idPlano`)
-) ENGINE=InnoDB AUTO_INCREMENT=26 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=31 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -119,7 +95,7 @@ CREATE TABLE `Dim_Plano` (
 
 LOCK TABLES `Dim_Plano` WRITE;
 /*!40000 ALTER TABLE `Dim_Plano` DISABLE KEYS */;
-INSERT INTO `Dim_Plano` VALUES (21,'Básico',19.90),(22,'Padrão',29.90),(23,'Premium',39.90),(24,'Familiar',49.90),(25,'Estudante',14.90);
+INSERT INTO `Dim_Plano` VALUES (26,'Básico',19.90),(27,'Padrão',29.90),(28,'Premium',39.90),(29,'Familiar',49.90),(30,'Estudante',14.90);
 /*!40000 ALTER TABLE `Dim_Plano` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -191,16 +167,14 @@ DROP TABLE IF EXISTS `Fato_Receita`;
 CREATE TABLE `Fato_Receita` (
   `idFato_Receita` bigint unsigned NOT NULL AUTO_INCREMENT,
   `fk_receita_plano` int NOT NULL,
-  `fk_receita_pagamento` int NOT NULL,
   `fk_receita_data` int NOT NULL,
+  `vlrRecebido` float DEFAULT NULL,
   PRIMARY KEY (`idFato_Receita`),
   KEY `idx_Plano` (`fk_receita_plano`),
-  KEY `idx_Pagamento` (`fk_receita_pagamento`),
   KEY `idx_DataPagamento` (`fk_receita_data`),
   CONSTRAINT `fk_Fato_Receita_DataPagamento` FOREIGN KEY (`fk_receita_data`) REFERENCES `Dim_Data` (`idDim_Data`),
-  CONSTRAINT `fk_Fato_Receita_Pagamento` FOREIGN KEY (`fk_receita_pagamento`) REFERENCES `Dim_Pagamento` (`idPagamento`),
   CONSTRAINT `fk_Fato_Receita_Plano` FOREIGN KEY (`fk_receita_plano`) REFERENCES `Dim_Plano` (`idPlano`)
-) ENGINE=InnoDB AUTO_INCREMENT=111 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=156 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -209,7 +183,7 @@ CREATE TABLE `Fato_Receita` (
 
 LOCK TABLES `Fato_Receita` WRITE;
 /*!40000 ALTER TABLE `Fato_Receita` DISABLE KEYS */;
-INSERT INTO `Fato_Receita` VALUES (66,21,21,405),(67,21,21,436),(68,21,21,464),(69,21,21,495),(70,21,21,525),(71,21,21,556),(72,22,22,829),(73,22,22,860),(74,22,22,890),(75,22,22,921),(76,22,22,951),(77,22,22,982),(78,22,22,1013),(79,22,22,1043),(80,22,22,1074),(81,22,22,1104),(82,23,23,1271),(83,23,23,1302),(84,23,23,1332),(85,23,23,1363),(86,23,23,1394),(87,23,23,1424),(88,23,23,1455),(89,23,23,1485),(90,23,23,1516),(91,23,23,1547),(92,23,23,1575),(93,23,23,1606),(94,24,24,1511),(95,24,24,1542),(96,24,24,1570),(97,24,24,1601),(98,24,24,1631),(99,24,24,1662),(100,24,24,1692),(101,24,24,1723),(102,24,24,1754),(103,24,24,1784),(104,24,24,1815),(105,25,25,1902),(106,25,25,1930),(107,25,25,1961),(108,25,25,1991),(109,25,25,2022),(110,25,25,2052);
+INSERT INTO `Fato_Receita` VALUES (111,26,405,19.9),(112,26,436,19.9),(113,26,464,19.9),(114,26,495,19.9),(115,26,525,19.9),(116,26,556,19.9),(117,27,829,29.9),(118,27,860,29.9),(119,27,890,29.9),(120,27,921,29.9),(121,27,951,29.9),(122,27,982,29.9),(123,27,1013,29.9),(124,27,1043,29.9),(125,27,1074,29.9),(126,27,1104,29.9),(127,28,1271,39.9),(128,28,1302,39.9),(129,28,1332,39.9),(130,28,1363,39.9),(131,28,1394,39.9),(132,28,1424,39.9),(133,28,1455,39.9),(134,28,1485,39.9),(135,28,1516,39.9),(136,28,1547,39.9),(137,28,1575,39.9),(138,28,1606,39.9),(139,29,1511,49.9),(140,29,1542,49.9),(141,29,1570,49.9),(142,29,1601,49.9),(143,29,1631,49.9),(144,29,1662,49.9),(145,29,1692,49.9),(146,29,1723,49.9),(147,29,1754,49.9),(148,29,1784,49.9),(149,29,1815,49.9),(150,30,1902,14.9),(151,30,1930,14.9),(152,30,1961,14.9),(153,30,1991,14.9),(154,30,2022,14.9),(155,30,2052,14.9);
 /*!40000 ALTER TABLE `Fato_Receita` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -227,4 +201,4 @@ SET @@SESSION.SQL_LOG_BIN = @MYSQLDUMP_TEMP_LOG_BIN;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-05-25 19:11:49
+-- Dump completed on 2025-05-25 20:14:30

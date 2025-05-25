@@ -32,28 +32,16 @@ SELECT
     p.vlrRecebido,
     pl.nmPlano,
     pl.precoMensal,
-    p.dtPagamento,
-    COUNT(a.idAssinatura) AS qtd_assinatura
+    p.dtPagamento
 FROM Pagamento p
 JOIN Assinatura a ON p.Assinatura_idAssinatura = a.idAssinatura
 JOIN Plano pl ON a.Plano_idPlano = pl.idPlano
 GROUP BY p.vlrRecebido, pl.nmPlano, pl.precoMensal, p.dtPagamento;
-
 ''')
 
 resultados = cursor_relacional.fetchall()
 
-for (vlRecebido, nmPlano, precoMensal, dtPagamento, qtd_assinatura) in resultados:
-
-     # --- Dim_Pagamento ---
-    cursor_dimensional.execute("SELECT idPagamento FROM Dim_Pagamento WHERE vlrRecebido = %s", (vlRecebido,))
-    row = cursor_dimensional.fetchone()
-    if row:
-        idPagamento = row[0]
-    else:
-        cursor_dimensional.execute("INSERT INTO Dim_Pagamento (vlrRecebido) VALUES (%s)", (vlRecebido,))
-        conn_dimensional.commit()
-        idPagamento = cursor_dimensional.lastrowid
+for (vlrRecebido, nmPlano, precoMensal, dtPagamento) in resultados:
 
     # --- Dim_Plano ---
     cursor_dimensional.execute("SELECT idPlano FROM Dim_Plano WHERE nmPlano = %s AND precoMensal = %s", (nmPlano, precoMensal))
@@ -85,10 +73,10 @@ for (vlRecebido, nmPlano, precoMensal, dtPagamento, qtd_assinatura) in resultado
     cursor_dimensional.execute("""
     INSERT IGNORE INTO Fato_Receita (
         fk_receita_plano,
-        fk_receita_pagamento,
+        vlrRecebido,
         fk_receita_data
     ) VALUES (%s, %s, %s)
-    """, (idPlano, idPagamento, idData))
+    """, (idPlano, vlrRecebido, idData))
 
     conn_dimensional.commit()
 print("ETL do fato assinatura feito com sucesso :)")
